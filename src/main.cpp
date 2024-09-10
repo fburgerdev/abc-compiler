@@ -22,6 +22,20 @@ int main() {
     // cout << file.searchSpan(code).value().end.ln << endl;
     // cout << file.searchSpan(code).value().end.col << endl;
 
+    // lexing
+    Lexer lexer = abcLexer();
+    List<Token> tokens = lexer.lex(file.view(), handler);
+    if (handler.shouldCancel()) {
+        handler.flush([&](strview code) {
+            return file.searchSpan(code).value();
+        });
+        return EXIT_FAILURE;
+    }
+    // // :: test
+    // for (const Token& token : tokens) {
+    //     cout << token.name << " : " << token.view << endl;
+    // }
+
     cout << "** compilation successfull **" << endl;
     return EXIT_SUCCESS;
 }
