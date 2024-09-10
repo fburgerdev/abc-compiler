@@ -36,6 +36,20 @@ int main() {
     //     cout << token.name << " : " << token.view << endl;
     // }
 
+    // parsing
+    Parser parser = abcParser();
+    UniquePtr<Layer> layer = parser.parse(move(tokens), handler);
+    if (handler.shouldCancel()) {
+        handler.flush([&](strview code) {
+            return file.searchSpan(code).value();
+        });
+        return EXIT_FAILURE;
+    }
+    // // :: test
+    // for (const Node& node : *layer) {
+    //     node.dump();
+    // }
+
     cout << "** compilation successfull **" << endl;
     return EXIT_SUCCESS;
 }

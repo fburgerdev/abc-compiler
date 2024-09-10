@@ -14,7 +14,7 @@ namespace Compiler {
         lexer.addToken("lit/char", "'([^'\\\\]|\\\\.)*'");
         lexer.addToken("lit/float", "[0-9]+\\.[0-9]+");
         lexer.addToken("lit/int", "[0-9]+");
-        lexer.addToken("lit/bool", "true|false");
+        lexer.addToken("lit/bool", "(true)|(false)");
         // keywords
         // :: declarations
         lexer.addToken("kw/var", "\\bvar\\b");
@@ -33,14 +33,15 @@ namespace Compiler {
         lexer.addToken("kw/public", "\\bpublic\\b");
         lexer.addToken("kw/private", "\\bprivate\\b");
         // :: qualifiers
+        lexer.addToken("kw/mut", "\\bmut\\b");
         lexer.addToken("kw/const", "\\bconst\\b");
         // :: types
-        lexer.addToken("kw/void", "\\bvoid\\b");
-        lexer.addToken("kw/bool", "\\bbool\\b");
-        lexer.addToken("kw/char", "\\bchar\\b");
-        lexer.addToken("kw/int", "\\bint\\b");
-        lexer.addToken("kw/uint", "\\buint\\b");
-        lexer.addToken("kw/float", "\\bfloat\\b");
+        lexer.addToken("kw/type/void", "\\bvoid\\b");
+        lexer.addToken("kw/type/bool", "\\bbool\\b");
+        lexer.addToken("kw/type/char", "\\bchar\\b");
+        lexer.addToken("kw/type/int", "\\bint\\b");
+        lexer.addToken("kw/type/uint", "\\buint\\b");
+        lexer.addToken("kw/type/float", "\\bfloat\\b");
         // :: statements
         lexer.addToken("kw/let", "\\blet\\b");
         lexer.addToken("kw/if", "\\bif\\b");
@@ -53,24 +54,38 @@ namespace Compiler {
         lexer.addToken("kw/break", "\\bbreak\\b");
         lexer.addToken("kw/return", "\\breturn\\b");
         // :: operators
-        lexer.addToken("op/and", "\\band\\b");
-        lexer.addToken("op/or", "\\bor\\b");
-        lexer.addToken("op/not", "\\bnot\\b");
+        lexer.addToken("kw/and", "\\band\\b");
+        lexer.addToken("kw/or", "\\bor\\b");
+        lexer.addToken("kw/not", "\\bnot\\b");
 
-        // operators
-        // :: special
+        // special operators
         lexer.addToken("op/scope", "::");
         lexer.addToken("op/member", "\\.");
+
+        // punctuators
+        lexer.addToken("a_open", "\\(");
+        lexer.addToken("a_close", "\\)");
+        lexer.addToken("comma", ",");
+        lexer.addToken("arrow", "->");
+        lexer.addToken("colon", ":");
+        lexer.addToken("semicolon", ";");
+        lexer.addToken("at", "@");
+        lexer.addToken("s_open", "\\[");
+        lexer.addToken("s_close", "\\]");
+        lexer.addToken("c_open", "\\{");
+        lexer.addToken("c_close", "\\}");
+
+        // operators
         // increment / decrement
         lexer.addToken("op/inc", "\\+\\+");
         lexer.addToken("op/dec", "--");
         // comparison
         lexer.addToken("op/eq", "==");
         lexer.addToken("op/neq", "!=");
-        lexer.addToken("op/lt", "<");
         lexer.addToken("op/lte", "<=");
-        lexer.addToken("op/gt", ">");
+        lexer.addToken("op/lt", "<");
         lexer.addToken("op/gte", ">=");
+        lexer.addToken("op/gt", ">");
         // assignment
         lexer.addToken("op/assign", "=");
         lexer.addToken("op/add_assign", "\\+=");
@@ -90,21 +105,8 @@ namespace Compiler {
         lexer.addToken("rvalue", "\\&\\&");
 
         // identifiers / members
-        lexer.addToken("identifier", "\\b[a-zA-Z][a-zA-Z0-9_]*\\b");
+        lexer.addToken("id/single", "\\b[a-zA-Z][a-zA-Z0-9_]*\\b");
         lexer.addToken("self_member", "\\b_[a-zA-Z0-9_]*\\b");
-
-        // punctuators
-        lexer.addToken("a_open", "\\(");
-        lexer.addToken("a_close", "\\)");
-        lexer.addToken("comma", ",");
-        lexer.addToken("arrow", "->");
-        lexer.addToken("colon", ":");
-        lexer.addToken("semicolon", ";");
-        lexer.addToken("at", "@");
-        lexer.addToken("s_open", "\\[");
-        lexer.addToken("s_close", "\\]");
-        lexer.addToken("c_open", "\\{");
-        lexer.addToken("c_close", "\\}");
  
         lexer.addIgnore("comment/single");
         lexer.addIgnore("comment/multi");
