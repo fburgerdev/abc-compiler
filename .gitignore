@@ -1,0 +1,4 @@
+.vscode
+bin
+build/*
+!build/premake5.lua
