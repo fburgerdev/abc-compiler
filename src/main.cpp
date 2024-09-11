@@ -50,6 +50,17 @@ int main() {
     //     node.dump();
     // }
 
+    // semantics
+    Source source(layer->front(), handler);
+    source.resolveTypes(handler);
+    source.resolveExprs(handler);
+    if (handler.shouldCancel()) {
+        handler.flush([&](strview code) {
+            return file.searchSpan(code).value();
+        });
+        return EXIT_FAILURE;
+    }
+    
     cout << "** compilation successfull **" << endl;
     return EXIT_SUCCESS;
 }
