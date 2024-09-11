@@ -15,6 +15,7 @@ namespace Compiler {
     strview Node::view() const {
         return _view;
     }
+
     // front / back
     Node& Node::front() {
         return *_begin;
@@ -28,6 +29,45 @@ namespace Compiler {
     const Node& Node::back() const {
         return *(std::prev(_end)); 
     }
+    // size
+    uint Node::size() const {
+        return std::distance(_begin, _end);
+    }
+    // at
+    Node& Node::at(uint index) {
+        return *(_begin + index);
+    }
+    const Node& Node::at(uint index) const {
+        return *(_begin + index);
+    }
+
+    // contains
+    bool Node::contains(strview query) const {
+        for (auto it = _begin; it != _end; ++it) {
+            if (it->match(query)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    // at
+    Node& Node::at(strview query) {
+        for (auto it = _begin; it != _end; ++it) {
+            if (it->match(query)) {
+                return *it;
+            }
+        }
+        throw std::runtime_error("node not found");
+    }
+    const Node& Node::at(strview query) const {
+        for (auto it = _begin; it != _end; ++it) {
+            if (it->match(query)) {
+                return *it;
+            }
+        }
+        throw std::runtime_error("node not found");
+    }
+
     // begin / end
     NodeIterator Node::begin() {
         return _begin;
@@ -40,6 +80,11 @@ namespace Compiler {
     }
     CNodeIterator Node::end() const {
         return _end;
+    }
+    // setRange
+    void Node::setRange(NodeIterator begin, NodeIterator end) {
+        _begin = begin;
+        _end = end;
     }
 
     // dump

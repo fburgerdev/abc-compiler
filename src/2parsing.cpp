@@ -7,7 +7,6 @@ namespace Compiler {
     template<>
     Node::Node<Token>(const Token& token)
         : tag(Tag(token.name)), _view(token.view) {}
-    
     // Layer
     template<>
     Layer::Layer<List<Token>>(const List<Token>& tokens) {

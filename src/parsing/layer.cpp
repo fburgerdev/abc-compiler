@@ -13,7 +13,6 @@ namespace Compiler {
             }
             else {
                 emplace(*it);
-                // emplace(it->tag, it, std::next(it));
                 ++it;
             }
         }
@@ -71,11 +70,12 @@ namespace Compiler {
                 while (childIt->view().begin() < it->view().begin()) {
                     childIt = std::next(childIt);
                 }
-                it->_begin = childIt;
+                auto begin = childIt;
                 while (childIt != _child->end() && childIt->view().begin() < it->view().end()) {
                     childIt = std::next(childIt);
                 }
-                it->_end = childIt;
+                auto end = childIt;
+                it->setRange(begin, end);
                 if (it->view() == it->front().view() && it->tag.str() == it->front().tag.str()) {
                     *it = it->front();
                 }

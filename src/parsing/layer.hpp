@@ -35,6 +35,7 @@ namespace Compiler {
         const Node& front() const;
         Node& back();
         const Node& back() const;
+        
         // begin / end
         NodeIterator begin();
         CNodeIterator begin() const;
