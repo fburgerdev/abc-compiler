@@ -61,6 +61,43 @@ int main() {
         return EXIT_FAILURE;
     }
     
+    // generate
+    CPP::Source cppSource(source);
+    strstream stream;
+    cppSource.generateAPI(stream);
+    string indent = "";
+    bool lastBracket = false;
+    for (char ch : stream.str()) {
+        if (ch == '}') {
+            indent.pop_back();
+            cout << '\n' << indent;
+        }
+        if (ch == '{') {
+            cout << ' ';
+        }
+        if (lastBracket && ch != ';') {
+            cout << '\n' << indent;
+        }
+        lastBracket = false;
+        cout << ch;
+        if (ch == ')') {
+            cout << ' ';
+        }
+        if (ch == ';') {
+            cout << '\n' << indent;
+        }
+        if (ch == '\n') {
+            cout << indent;
+        }
+        if (ch == '{') {
+            indent += '\t';
+            cout << '\n' << indent;
+        }
+        if (ch == '}') {
+            lastBracket = true;
+        }
+    }
+    
     cout << "** compilation successfull **" << endl;
     return EXIT_SUCCESS;
 }
