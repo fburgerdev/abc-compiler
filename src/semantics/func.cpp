@@ -21,6 +21,10 @@ namespace Compiler {
         return nullptr; //TODO: implement
     }
 
+    // isOperator
+    bool Func::isOperator() const {
+        return !std::isalpha(name.front());
+    }
     // matches
     bool Func::matches(const List<Type>& argTypes) {
         if (params.size() != argTypes.size()) {

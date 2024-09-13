@@ -33,7 +33,7 @@ namespace Compiler {
 
     // isClass
     bool Type::isClass() const {
-        return std::holds_alternative<const Class*>(value);
+        return std::holds_alternative<const Class*>(value) && std::get<const Class*>(value);
     }
     // getClass
     const Class& Type::getClass() const {

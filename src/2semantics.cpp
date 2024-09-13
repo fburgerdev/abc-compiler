@@ -36,22 +36,22 @@ namespace Compiler {
         }
 
         if (valueNode->match("kw/type")) {
-            if (valueNode->contains("kw/void")) {
+            if (valueNode->match("kw/type/void")) {
                 value = Primitive::VOID;
             }
-            else if (valueNode->contains("kw/bool")) {
+            else if (valueNode->match("kw/type/bool")) {
                 value = Primitive::BOOL;
             }
-            else if (valueNode->contains("kw/char")) {
+            else if (valueNode->match("kw/type/char")) {
                 value = Primitive::CHAR;
             }
-            else if (valueNode->contains("kw/int")) {
+            else if (valueNode->match("kw/type/int")) {
                 value = Primitive::INT;
             }
-            else if (valueNode->contains("kw/uint")) {
+            else if (valueNode->match("kw/type/uint")) {
                 value = Primitive::UINT;
             }
-            else if (valueNode->contains("kw/float")) {
+            else if (valueNode->match("kw/type/float")) {
                 value = Primitive::FLOAT;
             }
         }
@@ -146,33 +146,33 @@ namespace Compiler {
                 }
                 else if (child.match("api/func")) {
                     if (child.contains("head/func/init")) {
-                        initFuncs.emplace_back(access, InitFunc(child, handler));
+                        initFuncs.emplace_back(access, InitFunc(child.at("head"), handler));
                     }
                     else {
                         if (child.contains("deco")) {
                             if (child.at("deco").contains("kw/static")) {
-                                staticFuncs.emplace_back(access, StaticFunc(child, handler));
+                                staticFuncs.emplace_back(access, StaticFunc(child.at("head"), handler));
                             }
                             else {
                                 //TODO: handler
                             }
                         }
                         else {
-                            memberFuncs.emplace_back(access, MemberFunc(child, handler));
+                            memberFuncs.emplace_back(access, MemberFunc(child.at("head"), handler));
                         }
                     }
                 }
                 else if (child.match("api/var")) {
                     if (child.contains("deco")) {
                         if (child.at("deco").contains("kw/static")) {
-                            staticVars.emplace_back(access, StaticVar(child, handler));
+                            staticVars.emplace_back(access, StaticVar(child.at("head"), handler));
                         }
                         else {
                             //TODO: handler
                         }
                     }
                     else {
-                        memberVars.emplace_back(access, MemberVar(child, handler));
+                        memberVars.emplace_back(access, MemberVar(child.at("head"), handler));
                     }
                 }
             }
@@ -182,7 +182,7 @@ namespace Compiler {
     // Group
     template<>
     Group::Group<Node>(const Node& node, Handler& handler)  {
-        if (node.match("group")) {
+        if (node.match("api/group")) {
             name = node.at("head/group").front().view();
         }
         for (const Node& child : node) {
@@ -195,10 +195,10 @@ namespace Compiler {
                     classes.emplace(childName, Class(child, handler));
                 }
                 else if (child.match("api/func")) {
-                    funcs[childName].emplace_back(child, handler);
+                    funcs[childName].emplace_back(child.at("head"), handler);
                 }
                 else if (child.match("api/var")) {
-                    vars.emplace(childName, StaticVar(child, handler));
+                    vars.emplace(childName, StaticVar(child.at("head"), handler));
                 }
             }
         }

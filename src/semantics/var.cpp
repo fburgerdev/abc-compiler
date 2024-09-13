@@ -8,7 +8,10 @@ namespace Compiler {
 
     // StaticVar
     Type StaticVar::getType() const {
-        return std::get<Type>(type);
+        if (std::holds_alternative<Type>(type)) {
+            return std::get<Type>(type);
+        }
+        return Type(Identifier());
     }
     // MemberVar
     Type MemberVar::getType() const {
@@ -20,6 +23,9 @@ namespace Compiler {
     }
     // LocalVar
     Type LocalVar::getType() const {
-        return std::get<Type>(type);
+        if (std::holds_alternative<Type>(type)) {
+            return std::get<Type>(type);
+        }
+        return Type(Identifier());
     }
 }

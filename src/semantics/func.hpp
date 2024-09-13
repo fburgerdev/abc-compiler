@@ -20,14 +20,16 @@ namespace Compiler {
     struct Func : public Scope {
         // constructor
         Func() = default;
-        
+                
         // setScope
         void setScope(Scope* scope);
         // "Scope" implementation
         virtual Class* searchClass(const Identifier& id) override;
         virtual Func* searchFunc(const Identifier& id, const List<Type>& argTypes) override;
         virtual Var* searchVar(const Identifier& id) override;
-        
+
+        // isOperator
+        bool isOperator() const;
         // matches
         bool matches(const List<Type>& argTypes);
         // dependsOn
