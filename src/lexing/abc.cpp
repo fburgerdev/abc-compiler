@@ -36,7 +36,6 @@ namespace Compiler {
         lexer.addToken("kw/mut", "\\bmut\\b");
         lexer.addToken("kw/const", "\\bconst\\b");
         // :: types
-        lexer.addToken("kw/type/void", "\\bvoid\\b");
         lexer.addToken("kw/type/bool", "\\bbool\\b");
         lexer.addToken("kw/type/char", "\\bchar\\b");
         lexer.addToken("kw/type/int", "\\bint\\b");

@@ -43,9 +43,9 @@ namespace Compiler {
         parser.add({ // type
             { "type" },
             OR(
-                AND(OR("kw/mut", "kw/const"), OR("kw/type", "id"), OR("lvalue", "rvalue")),
+                AND(OR("kw/mut", "kw/const"), OR("lvalue", "rvalue"), OR("kw/type", "id")),
                 AND(OR("kw/mut", "kw/const"), OR("kw/type", "id")),
-                AND(OR("kw/type", "id"), OR("lvalue", "rvalue"))
+                AND(OR("lvalue", "rvalue"), OR("kw/type", "id"))
             )
         });
 
@@ -77,17 +77,21 @@ namespace Compiler {
             { "param_list" },
             AND("param", SEQ("comma", "param"))
         });
-        parser.add({ // normal function head
-            { "head/func/normal" },
-            AND("kw/func", "id/single", "a_open", OPT("param_list"), "a_close", OPT("kw/const"), "arrow", TYPE)
-        });
         parser.add({ // init function head
             { "head/func/init" },
             AND("kw/init", "a_open", OPT("param_list"), "a_close")
         });
+        parser.add({ // deinit function head
+            { "head/func/deinit" },
+            AND("kw/deinit", "a_open", "a_close")
+        });
+        parser.add({ // normal function head
+            { "head/func/normal" },
+            AND("kw/func", "id/single", "a_open", OPT("param_list"), "a_close", OPT("kw/const"), OPT("arrow", TYPE))
+        });
         parser.add({ // operator function head
             { "head/func/op" },
-            AND("kw/op", "op", "a_open", OPT("param_list"), "a_close", OPT("kw/const"), "arrow", TYPE)
+            AND("kw/op", "op", "a_open", OPT("param_list"), "a_close", OPT("kw/const"), OPT("arrow", TYPE))
         });
         // :: class
         parser.add({ // class head
@@ -194,9 +198,9 @@ namespace Compiler {
             AND("colon", "init", SEQ("comma", "init"))
         });
 
-        // decoration
-        parser.add({ // decoration
-            { "deco" },
+        // specifier
+        parser.add({ // specifier
+            { "specifier" },
             AND("at", OR("kw/local", "kw/global", "kw/static"))
         });
 
@@ -210,8 +214,8 @@ namespace Compiler {
         parser.add({ // variable
             { "api/var" },
             OR(
-                AND(OPT("deco"), "head/var", "semicolon"),
-                AND(OPT("deco"), "head/var", "op/assign", EXPR, "semicolon")
+                AND(OPT("specifier"), "head/var", "semicolon"),
+                AND(OPT("specifier"), "head/var", "op/assign", EXPR, "semicolon")
             )
         });
 
@@ -277,11 +281,11 @@ namespace Compiler {
         // function
         parser.add({ // function (with block)
             { "api/func" },
-            AND(OPT("deco"), "head/func", OPT("init_list"), "block")
+            AND(OPT("specifier"), "head/func", OPT("init_list"), "block")
         });
         parser.add({ // function (without block but initializer list)
             { "api/func" },
-            AND(OPT("deco"), "head/func", "init_list")
+            AND(OPT("specifier"), "head/func", "init_list")
         });
 
         // class
