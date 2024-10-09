@@ -67,7 +67,6 @@ group Snake {
                 _inGame = false;
             }
         }
-
         func spawnApple() {
             _apple = Vec2(std::random(0, _size.x), std::random(0, _size.y));
             for coords in _snake {
@@ -80,7 +79,7 @@ group Snake {
         var inGame: bool = true;
         var score: uint = 0;
         var snake: std::dequevec2;
-        var apple: Vec2;
+        var apple: Math::Vec2;
         var size: const int;
     }
 }
