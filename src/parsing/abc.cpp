@@ -211,12 +211,13 @@ namespace Compiler {
         });
 
         // variable
-        parser.add({ // variable
-            { "api/var" },
-            OR(
-                AND(OPT("specifier"), "head/var", "semicolon"),
-                AND(OPT("specifier"), "head/var", "op/assign", EXPR, "semicolon")
-            )
+        parser.add({ // variable (init)
+            { "api/var/init" },
+            AND(OPT("specifier"), "head/var", "op/assign", EXPR, "semicolon")
+        });
+        parser.add({ // variable (no init)
+            { "api/var/no_init" },
+            AND(OPT("specifier"), "head/var", "semicolon")
         });
 
         // statements
@@ -311,7 +312,8 @@ namespace Compiler {
             // api keywords
             "kw/var", "kw/func", "kw/class", "kw/group",
             // special function keywords
-            "kw/init", "kw/deinit", "kw/op",
+            // "kw/init", "kw/deinit",
+            "kw/op",
             // statement keywords
             "kw/let", "kw/if", "kw/elif", "kw/else", "kw/while", "kw/for", "kw/in", "kw/skip", "kw/break", "kw/return",
             // special operators
