@@ -1,34 +1,78 @@
 #include "group.hpp"
 
 namespace Compiler {
-    // setScope
-    void Group::setScope(Scope* scope) {
-        parentScope = scope;
-        for (auto& [name, group] : groups) {
-            group.setScope(this);
-        }
-        for (auto& [name, cls] : classes) {
-            cls.setScope(this);
-        }
-        for (auto& [name, func_list] : funcs) {
-            for (auto& func : func_list) {
-                func.setScope(this);
+    // findInCurrent
+    Var* Group::findVarInCurrent(ID id, uint depth) {
+        if (depth == 0 && id.length() && id.context(0).empty()) {
+            if (isGlobal()) {
+                return findVarInCurrent(id, 1);
             }
+            return nullptr;
         }
-        for (auto& [name, var] : vars) {
-            var.scope = this;
+
+        if (id.length() == depth) {
+            string name(id.name());
+            if (vars.contains(name)) {
+                return &vars.at(name);
+            }
+            return nullptr;
         }
+        string name(id.context(depth));
+        if (groups.contains(name)) {
+            return groups.at(name).findVarInCurrent(id, depth + 1);
+        }
+        if (classes.contains(name)) {
+            return classes.at(name).findVarInCurrent(id, depth + 1);
+        }
+        return nullptr;
     }
-    // searchClass
-    Class* Group::searchClass(const Identifier& id) {
-        return nullptr; //TODO: implement
+    Func* Group::findFuncInCurrent(ID id, uint depth) {
+        if (depth == 0 && id.length() && id.context(0).empty()) {
+            if (isGlobal()) {
+                return findFuncInCurrent(id, 1);
+            }
+            return nullptr;
+        }
+
+        if (id.length() == depth) {
+            string name(id.name());
+            if (funcs.contains(name)) {
+                return &funcs.at(name);
+            }
+            return nullptr;
+        }
+        string name(id.context(depth));
+        if (groups.contains(name)) {
+            return groups.at(name).findFuncInCurrent(id, depth + 1);
+        }
+        if (classes.contains(name)) {
+            return classes.at(name).findFuncInCurrent(id, depth + 1);
+        }
+        return nullptr;
     }
-    // searchFunc
-    Func* Group::searchFunc(const Identifier& id, const List<Type>& argTypes) {
-        return nullptr; //TODO: implement
-    }
-    // searchVar
-    Var* Group::searchVar(const Identifier& id) {
-        return nullptr; //TODO: implement
+    Class* Group::findClassInCurrent(ID id, uint depth) {
+        if (depth == 0 && id.length() && id.context(0).empty()) {
+            if (isGlobal()) {
+                return findClassInCurrent(id, 1);
+            }
+            return nullptr;
+        }
+
+        if (id.length() == depth) {
+            string name(id.name());
+            if (classes.contains(name)) {
+                return &classes.at(name);
+            }
+            return nullptr;
+        }
+        string name(id.context(depth));
+        if (groups.contains(name)) {
+            return groups.at(name).findClassInCurrent(id, depth + 1);
+        }
+        if (classes.contains(name)) {
+            return classes.at(name).findClassInCurrent(id, depth + 1);
+        }
+
+        return nullptr;
     }
 }

@@ -2,67 +2,23 @@
 #include "var.hpp"
 
 namespace Compiler {
-    // // Operator
-    // enum class Operator {
-    //     // increment / decrement
-    //     INC, DEC,
-    //     // comparison
-    //     EQ, NEQ,
-    //     LT, LEQ, GT, GEQ,
-    //     // assignment
-    //     ASSIGN,
-    //     ADD_ASSIGN, SUB_ASSIGN, MUL_ASSIGN, DIV_ASSIGN,
-    //     // arithmetic
-    //     ADD, SUB, MUL, DIV,
-    // };
-
     // Func
-    struct Func : public Scope {
+    class Func : public Context {
+    public:
         // constructor
         Func() = default;
-                
-        // setScope
-        void setScope(Scope* scope);
-        // "Scope" implementation
-        virtual Class* searchClass(const Identifier& id) override;
-        virtual Func* searchFunc(const Identifier& id, const List<Type>& argTypes) override;
-        virtual Var* searchVar(const Identifier& id) override;
+        template<class Node>
+        Func(const Node& node, Context* parent, Handler& handler);
 
-        // isOperator
-        bool isOperator() const;
-        // matches
-        bool matches(const List<Type>& argTypes);
-        // dependsOn
-        bool dependsOn(const Class& cls) const;
+        // findInCurrent
+        virtual Var* findVarInCurrent(ID id, uint depth) override;
 
-        // name / params / returnType
+        // name, qualifier, specifier, params
         strview name;
-        List<FuncVar> params;
-        Type returnType;
-    };
-
-    // InitFunc
-    struct InitFunc : public Func {
-        // constructor
-        InitFunc() = default;
-        template<class Node>
-        InitFunc(const Node& node, Handler& handler);
-    };
-    // StaticFunc
-    struct StaticFunc : public Func {
-        // constructor
-        StaticFunc() = default;
-        template<class Node>
-        StaticFunc(const Node& node, Handler& handler);
-    };
-    // MemberFunc
-    struct MemberFunc : public Func {
-        // constructor
-        MemberFunc() = default;
-        template<class Node>
-        MemberFunc(const Node& node, Handler& handler);
-
-        // isConst
-        bool isConst = false;
+        Qualifier qualifier = Qualifier::NONE;
+        Specifier specifier = Specifier::NONE;
+        List<Var> params;
+        // returnType (nullopt ~ void)
+        Opt<Type> returnType;
     };
 }

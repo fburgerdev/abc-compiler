@@ -52,8 +52,7 @@ int main() {
 
     // semantics
     Source source(layer->front(), handler);
-    source.resolveTypes(handler);
-    source.resolveExprs(handler);
+    source.bind(handler);
     if (handler.shouldCancel()) {
         handler.flush([&](strview code) {
             return file.searchSpan(code).value();

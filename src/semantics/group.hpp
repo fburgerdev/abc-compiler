@@ -3,24 +3,24 @@
 
 namespace Compiler {
     // Group
-    struct Group : public Scope {
+    class Group : public Context {
+    public:
         // constructor
         Group() = default;
         template<class Node>
-        Group(const Node& node, Handler& handler);
-
-        // setScope
-        void setScope(Scope* scope);
-        // "Scope" implementation
-        virtual Class* searchClass(const Identifier& id) override;
-        virtual Func* searchFunc(const Identifier& id, const List<Type>& argTypes) override;
-        virtual Var* searchVar(const Identifier& id) override;
+        Group(const Node& node, Context* parent, Handler& handler);
         
-        // name / content
+        // findInCurrent
+        virtual Var* findVarInCurrent(ID id, uint depth) override;
+        virtual Func* findFuncInCurrent(ID id, uint depth) override;
+        virtual Class* findClassInCurrent(ID id, uint depth) override;
+
+        // name
         strview name;
+        // groups, classes, funcs, vars
         Map<string, Group> groups;
         Map<string, Class> classes;
-        Map<string, List<StaticFunc>> funcs;
-        Map<string, StaticVar> vars;
+        Map<string, Func> funcs;
+        Map<string, Var> vars;
     };
 }
