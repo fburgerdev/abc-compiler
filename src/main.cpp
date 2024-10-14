@@ -1,7 +1,7 @@
 #include "abc-compiler.hpp"
 
 using namespace Compiler;
-static Filepath examples = Filepath(__FILE__).parent_path() /  "../example";
+static Filepath examples = "/home/florian/abc-compiler/example";
 int main() {
     // handler
     Handler handler;
