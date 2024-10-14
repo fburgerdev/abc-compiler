@@ -1,10 +1,11 @@
 -- premake5.lua
 ROOT = ".."
+WORKSPACE = "abc"
 
 -- workspace
-workspace "abc"
+workspace(WORKSPACE)
     -- startproject
-    startproject "abc"
+    startproject(WORKSPACE)
     -- cpp
     language "C++"
     cppdialect "C++20"
@@ -13,28 +14,25 @@ workspace "abc"
     debugger "GDB"
 
     -- defines
-    defines {  }
+    defines { }
 
     -- dependancies
     -- :: directories
     libdirs {
-        --   ROOT .. "/lib/%{cfg.buildcfg}",
-        --   ROOT .. "/modules/*/lib/%{cfg.buildcfg}",
-        --   ROOT .. "/vendor/*/lib/%{cfg.buildcfg}"
+        --[[ INSERT ADDITIONAL LINKS HERE ]]
     }
     -- :: libraries
-    links {  --[[ INSERT ADDITIONAL LINKS HERE ]] }
+    links { --[[ INSERT ADDITIONAL LINKS HERE ]] }
 
     -- config
     configurations { "debug", "release", "dist" }
     -- :: debug
     filter "configurations:debug"
-        -- precompiled headers
-        pchheader "common.hpp"
-        pchsource "common.cpp"
         -- symbols / defines
         symbols "On"
         defines { "CONFIG_DEBUG" }
+        -- options
+        linkoptions{ }
     -- :: release
     filter "configurations:release"
         -- optimize / defines
@@ -57,30 +55,31 @@ workspace "abc"
     -- :: linux
     filter "system:linux"
         defines { "SYSTEM_LINUX" }
-    
+
+    -- binaries
+    targetdir(ROOT .. "/bin/%{cfg.buildcfg}")
+    objdir(ROOT .. "/bin/obj")
+
     -- toolset
     -- :: gcc
     filter "toolset:gcc"
         buildoptions { "-Wall", "-Wextra", "-Wpedantic" }
 
--- project lib
-project "abc"
+-- project app
+project(WORKSPACE)
     -- console
     kind "ConsoleApp"
 
+    -- precompiled headers
+    pchheader "common.hpp"
+    pchsource "common.cpp"
+    
     -- include
     includedirs {
-        ROOT,
+        ROOT .. "/",
         ROOT .. "/src",
-        --   ROOT .. "/modules/*/include",
-        --   ROOT .. "/vendor/*/include"
     }
     -- files
     files {
         ROOT .. "/src/**",
-        --   ROOT .. "/vendor/*/src/**",
     }
-   
-    -- binaries
-    targetdir(ROOT .. "/bin/%{cfg.system}_%{cfg.buildcfg}")
-    objdir(ROOT .. "/bin/%{cfg.system}_%{cfg.buildcfg}/obj")
