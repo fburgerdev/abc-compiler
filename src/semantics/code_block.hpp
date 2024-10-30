@@ -2,21 +2,23 @@
 #include "context.hpp"
 
 namespace Compiler {
-    // forward
-    class Stmt;
+    namespace ABC {
+        // forward
+        class Stmt;
 
-    // CodeBlock
-    class CodeBlock : public Context {
-    public:
-        // constructor
-        CodeBlock() = default;
-        template<class T>
-        CodeBlock(const T& node, Context* parent, Handler& handler);
+        // CodeBlock
+        class CodeBlock : public Context {
+        public:
+            // constructor
+            CodeBlock() = default;
+            template<class T>
+            CodeBlock(const T& node, Context* parent, Handler& handler);
 
-        // findInCurrent
-        virtual Var* findVarInCurrent(ID id, uint depth) override;
+            // findInCurrent
+            virtual Var* findVarInCurrent(ID id, uint depth) override;
 
-        // stmts
-        List<Stmt> stmts;
-    };
+            // stmts
+            List<Stmt> stmts;
+        };
+    }
 }

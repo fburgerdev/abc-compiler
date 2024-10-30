@@ -51,8 +51,8 @@ int main() {
     // }
 
     // semantics
-    Source source(layer->front(), handler);
-    source.bind(handler);
+    ABC::Source sourceABC(layer->front(), handler);
+    sourceABC.bind(handler);
     if (handler.shouldCancel()) {
         handler.flush([&](strview code) {
             return file.searchSpan(code).value();
