@@ -55,6 +55,9 @@ namespace Compiler {
     using uint16 = std::uint16_t;
     using uint32 = std::uint32_t;
     using uint64 = std::uint64_t;
+    // :: float
+    using float32 = float;
+    using float64 = double;
     // :: string
     using string = std::string;
     using strview = std::string_view;
@@ -68,6 +71,10 @@ namespace Compiler {
     using Tuple = std::tuple<TArgs...>;
     template<typename... TArgs>
     using Variant = std::variant<TArgs...>;
+    template<typename T, typename... TArgs>
+    inline bool holds(const Variant<TArgs...>& variant) {
+        return std::holds_alternative<T>(variant);
+    }
 
     // container
     // :: sequential
