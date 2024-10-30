@@ -5,7 +5,6 @@
 #include "lexing/abc.hpp"
 #include "parsing/abc.hpp"
 #include "semantics/source.hpp"
-#include "generate/code.hpp"
-#include "generate/format.hpp"
+#include "generate/generator_c.hpp"
 // test
 #include "test/handler.hpp"

@@ -61,11 +61,10 @@ int main() {
     }
     
     // generate
-    CPP::Header header(source.global);
-    strstream headerStream;
-    headerStream << header;
-
-    formatSource(headerStream.str(), cout);
+    IR::Source sourceIR;
+    GeneratorC generator(cout);
+    generator.generate(sourceIR);
+    
     cout << "** compilation successfull **" << endl;
     return EXIT_SUCCESS;
 }
