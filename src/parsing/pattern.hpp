@@ -8,6 +8,50 @@ namespace Compiler {
         { pattern.match(begin, end) } -> std::same_as<Opt<NodeIterator>>;
     };
 
+    // CachePattern
+    template<class Sub>
+    struct CachePattern {
+        // constructor
+        CachePattern(Tag tag, Sub&& sub)
+            : tag(tag), sub(move(sub)) {}
+
+        // match
+        Opt<NodeIterator> match(NodeIterator begin, NodeIterator end) const {
+            if (begin != end && begin->tag == tag) {
+                return ++begin;
+            }
+            Opt<NodeIterator> submatch = sub.match(begin, end);
+            if (submatch) {
+                cache = Pair<NodeIterator, NodeIterator>(begin, submatch.value());
+            }
+            else {
+                cache.reset();
+            }
+            return submatch;
+        }
+        // foreachQuery
+        void foreachQuery(function<void(strview)> func) const {
+            func(tag.str());
+            sub.foreachQuery(func);
+        }
+        // extendCache
+        void extendCache(Map<Tag, Pair<NodeIterator, NodeIterator>>& map) const {
+            sub.extendCache(map);
+            if (cache) {
+                map.emplace(tag, cache.value());
+            }
+        }
+        // toString
+        string toString() const {
+            return sub.toString();
+        }
+
+        // query
+        Tag tag;
+        mutable Opt<Pair<NodeIterator, NodeIterator>> cache;
+        Sub sub;
+    };
+
     // QueryPattern
     struct QueryPattern {
         // constructor
@@ -27,6 +71,10 @@ namespace Compiler {
         // foreachQuery
         void foreachQuery(function<void(strview)> func) const {
             func(query);
+        }
+        // extendCache
+        void extendCache(Map<Tag, Pair<NodeIterator, NodeIterator>>& map) const {
+            // pass
         }
         // toString
         string toString() const {
@@ -67,6 +115,10 @@ namespace Compiler {
         // foreachQuery
         void foreachQuery(function<void(strview)> func) const {
             sub.foreachQuery(func);
+        }
+        // extendCache
+        void extendCache(Map<Tag, Pair<NodeIterator, NodeIterator>>& map) const {
+            sub.extendCache(map);
         }
         // toString
         string toString() const {
@@ -109,6 +161,12 @@ namespace Compiler {
                 ((args.foreachQuery(func)), ...);
             }, subs);
         }
+        // extendCache
+        void extendCache(Map<Tag, Pair<NodeIterator, NodeIterator>>& map) const {
+            std::apply([&](const auto&... args) {
+                ((args.extendCache(map)), ...);
+            }, subs);
+        }
         // toString
         string toString() const {
             return std::apply([](const auto&... args) {
@@ -142,6 +200,12 @@ namespace Compiler {
                 ((args.foreachQuery(func)), ...);
             }, subs);
         }
+        // extendCache
+        void extendCache(Map<Tag, Pair<NodeIterator, NodeIterator>>& map) const {
+            std::apply([&](const auto&... args) {
+                ((args.extendCache(map)), ...);
+            }, subs);
+        }
         // toString
         string toString() const {
             return std::apply([](const auto&... args) {
@@ -173,6 +237,10 @@ namespace Compiler {
         void foreachQuery(function<void(strview)> func) const {
             sub.foreachQuery(func);
         }
+        // extendCache
+        void extendCache(Map<Tag, Pair<NodeIterator, NodeIterator>>& map) const {
+            sub.extendCache(map);
+        }
         // toString
         string toString() const {
             return sub.toString() + "?";
@@ -190,6 +258,15 @@ namespace Compiler {
     template<typename T> requires std::convertible_to<T, strview>
     auto toPattern(T str) {
         return QueryPattern(str);
+    }
+    // SUB
+    template<typename Sub>
+    auto SUB(strview tagname, Sub&& sub) {
+        return CachePattern(Tag(tagname), toPattern(sub));
+    }
+    template<typename... Subs>
+    auto SUB(strview tagname, Subs&&... subs) {
+        return CachePattern(Tag(tagname), AND(subs...));
     }
     // QUERY
     auto QUERY(strview str) {

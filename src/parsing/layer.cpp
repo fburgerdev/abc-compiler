@@ -2,14 +2,43 @@
 
 namespace Compiler {
     // constructor
-    Layer::Layer(UniquePtr<Layer>&& prev, const Rule& rule)
+    Layer::Layer(UniquePtr<Layer>&& prev, const Rule& rule, uint cacheLevel)
         : _child(move(prev)) {
+        createNodes(rule, cacheLevel);
+    }
+
+    void Layer::createNodes(const Rule& rule, uint cacheLevel, bool builtCache) {
+        _nodes.clear();
         for (auto it = _child->begin(); it != _child->end();) {
             auto match = rule.func(it, _child->end());
             if (match) {
+                auto [end, map] = match.value();
+                if (map.size() && cacheLevel == 0 && !builtCache) {
+                    _child = makeUniquePtr<Layer>(move(_child), rule, 1);
+                    return createNodes(rule, 0, true);
+                }
                 _shouldDiscard = false;
-                emplace(rule.tag, it, match.value());
-                it = match.value();
+                if (cacheLevel == 0) {
+                    emplace(rule.tag, it, end);
+                }
+                else {
+                    for (auto cacheIt = it; cacheIt != end;) {
+                        bool inCache = false;
+                        for (const auto& [tag, range] : map) {
+                            if (range.first == cacheIt) {
+                                emplace(tag, range.first, range.second);
+                                inCache = true;
+                                cacheIt = range.second;
+                                break;
+                            }
+                        }
+                        if (!inCache) {
+                            emplace(*cacheIt);
+                            cacheIt += 1;
+                        }
+                    }
+                }
+                it = end;
             }
             else {
                 emplace(*it);

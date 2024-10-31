@@ -4,7 +4,7 @@
 namespace Compiler {
     // MatchFunction
     using MatchFunction = function<
-        Opt<NodeIterator>(NodeIterator,NodeIterator)
+        Opt<Pair<NodeIterator, Map<Tag, Pair<NodeIterator, NodeIterator>>>>(NodeIterator,NodeIterator)
     >;
 
     // Rule
@@ -14,7 +14,15 @@ namespace Compiler {
         template<typename Pattern>
         Rule(const Tag& tag, const Pattern& pattern)
             : tag(tag), func([=](NodeIterator begin, NodeIterator end) {
-            return pattern.match(begin, end);
+            Opt<Pair<NodeIterator, Map<Tag, Pair<NodeIterator, NodeIterator>>>> out;
+            auto match = pattern.match(begin, end);
+            if (match) {
+                out = Pair<NodeIterator, Map<Tag, Pair<NodeIterator, NodeIterator>>>(
+                    match.value(), {}
+                );
+                pattern.extendCache(out->second);
+            }
+            return out;
         }) {
             pattern.foreachQuery([&](strview query) {
                 queries.emplace(query);

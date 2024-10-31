@@ -8,12 +8,20 @@ namespace Compiler {
         // constructor
         template<class TokenRange>
         Layer(const TokenRange& tokens);
-        Layer(UniquePtr<Layer>&& prev, const Rule& rule);
+        Layer(UniquePtr<Layer>&& prev, const Rule& rule, uint cacheLevel = 0);
         // copy / move
         Layer(const Layer& other) = delete;
         Layer(Layer&& other) = default;
         auto& operator=(const Layer& other) = delete;
         Layer& operator=(Layer&& other) = default;
+
+        // createNodes
+        void createNodes(const Rule& rule, uint cacheLevel, bool builtCache = false);
+
+        // createCache
+        UniquePtr<Layer> createCache(const Rule& rule);
+        // afterCache
+        void afterCache(const Rule& rule);
 
         // emplace
         void emplace(const Node& node);
