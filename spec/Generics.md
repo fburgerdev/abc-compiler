@@ -1,11 +1,11 @@
 # Generics
 
-1. **generic<**param1**:** _kind1_**,** _…_**,** _paramN_**:** _kindN_**>** _definition_
+1. **generic<**_param1_**:** _kind1_**,** _…_**,** _paramN_**:** _kindN_**>** _definition_
 
 > A generic parameter is either a _type_, or a _primitive_
+
 # Classes
-
-
+```
 generic<T: type, N: u64>
 class array {
   init(value: const &T)
@@ -18,7 +18,7 @@ class array {
 	  return _data[n];
   }
   private:
-  \_\_seq<T, N> data;
+  __seq<T, N> data;
 }
 
 func main() -> i32 {
@@ -28,11 +28,10 @@ func main() -> i32 {
   }
   return 0;
 }
-
+```
 
 # Functions
-
-
+```
 generic<T: type>
 func swap(x1: &T, x2: &T) {
   let temp :T= move(x1);
@@ -47,11 +46,10 @@ func main() -> i32 {
   std::print(str1, " ", str2, "!");
   return 0;
 }
-
+```
 
 # Variables
-
-
+```
 generic<T: type>
 var staticList := std::list<T>();
 
@@ -66,3 +64,4 @@ func main() -> i32 {
   std::print(staticList<char>.size()); // 12
   return 0;
 }
+```

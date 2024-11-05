@@ -6,7 +6,6 @@
 - _expression_ specifies the object to iterate over. The type must satisfy the properties stated in the section _range_.
 
 # Ranges (TODO)
-
 A range is a class satisfying the following properties:
 
 begin, end,
