@@ -2,6 +2,8 @@
 This repo is a compiler for the `abc` language, a c++ like language created by me.
 
 Both the language and the compiler were created for fun, as well as to learn about designing programming languages and building compilers.
+## Architecture
+![image](https://github.com/user-attachments/assets/ed1c587c-b8db-40da-ac6b-8da22bac5866)
 
 ## The abc-language
 
