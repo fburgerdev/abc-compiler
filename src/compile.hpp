@@ -48,7 +48,7 @@ namespace Compiler {
             handler.flush([&](strview code) {
                 return file.searchSpan(code).value();
             });
-            return EXIT_FAILURE;
+            return false;
         }
         // // :: test
         // for (const Node& node : *layer) {

@@ -136,7 +136,7 @@ namespace Compiler {
             },
             { // not / pre-increment / pre-decrement
                 { "expr/unary" },
-                AND(OR("op/not", "op/inc", "op/dec"), EXPR)
+                AND(OR("kw/not", "op/inc", "op/dec"), EXPR)
             },
             // 5
             { // multiplication / division / modulo

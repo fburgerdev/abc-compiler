@@ -5,6 +5,7 @@ namespace Compiler {
     static inline string check_mark = "\033[32m\u2714\033[0m";
     static inline string cross_mark = "\033[31m\u2718\033[0m";
     bool test_file(const Filepath& path) {
+        cout << "compiling " << path.string() << endl;
         if (compile(path)) {
             cout << check_mark << " " << path.string() << endl;
             return true;
@@ -29,7 +30,7 @@ namespace Compiler {
         else if (stdf::is_directory(path)) {
             for (const auto& entry : stdf::recursive_directory_iterator(path)) {
                 if (entry.is_regular_file()) {
-                    if (test_file(path)) {
+                    if (test_file(entry.path())) {
                         passed += 1;
                     }
                     else {
