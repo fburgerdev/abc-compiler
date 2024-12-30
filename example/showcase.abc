@@ -1,0 +1,9 @@
+
+
+func main() -> int {
+
+
+    for i in std::range(0, 10) {
+        std::print(i);
+    }
+}

@@ -1,0 +1,25 @@
+// range
+class range {
+    // init
+    init(begin: int, end: int)
+        : begin{begin}, end{end}
+
+    // begin(), end()
+    func begin() -> int {
+        return begin;
+    }
+    func end() -> int {
+        return end;
+    }
+
+    // begin, end    
+    var begin: int;
+    var end: int;
+}
+
+func main() -> int {
+    // for
+    for i in range(0, 10) {
+        std::print(i);
+    }
+}

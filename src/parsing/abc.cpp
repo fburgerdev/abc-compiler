@@ -32,137 +32,134 @@ namespace Compiler {
     Parser abcParser() {
         Parser parser(tokenTags);
 
-        // identifier
-        parser.add({ // nested identifier
+        // specifier, qualifier, category
+        auto SPECIFIER = OR("kw/local", "kw/global", "kw/static");
+        auto QUALIFIER = OR("kw/mut", "kw/const");
+        auto CATEGORY = OR("lvalue", "rvalue");
+
+        // id
+        parser.add({
             { "id/nested" },
             AND("id", SEQ1("op/scope", "id"))
         });
-
         // type
-        auto TYPE = OR("kw/type", "id", "type");
-        parser.add({ // type
-            { "type" },
-            OR(
-                AND(OR("kw/mut", "kw/const"), OR("lvalue", "rvalue"), OR("kw/type", "id")),
-                AND(OR("kw/mut", "kw/const"), OR("kw/type", "id")),
-                AND(OR("lvalue", "rvalue"), OR("kw/type", "id"))
-            )
+        auto TYPE = SUB("type",
+            AND(OPT(QUALIFIER), OPT(CATEGORY), OR("kw/type", "id"))
+        );
+        // typed_id
+        parser.add({
+            { "typed_id"},
+            AND("id", "colon", TYPE)
+        });
+
+        // specifier
+        parser.add({
+            { "specifier" },
+            AND("at", SPECIFIER)
         });
 
         // heads
-        // :: let
-        parser.add({ // let head (type)
-            { "head/let/type" },
-            AND("kw/let", "id/single", "colon", TYPE)
-        });
-        parser.add({ // let head (auto)
-            { "head/let/auto" },
-            AND("kw/let", "id/single", "colon")
-        });
         // :: var
-        parser.add({ // variable head (type)
-            { "head/var/type" },
-            AND("kw/var", "id/single", "colon", TYPE)
-        });
-        parser.add({ // variable head (auto)
+        parser.add({
             { "head/var/auto" },
             AND("kw/var", "id/single", "colon")
         });
+        parser.add({
+            { "head/var/type" },
+            AND("kw/var", "typed_id")
+        });
         // :: func
-        parser.add({ // parameter
-            { "param" },
-            AND("id/single", "colon", TYPE)
-        });
-        parser.add({ // parameter list
-            { "param_list" },
-            AND("param", SEQ("comma", "param"))
-        });
-        parser.add({ // init function head
+        auto PARAMS = SUB("params", AND("typed_id", SEQ("comma", "typed_id")));
+        parser.add({
             { "head/func/init" },
-            AND("kw/init", "a_open", OPT("param_list"), "a_close")
+            AND("kw/init", "a_open", OPT(PARAMS), "a_close")
         });
-        parser.add({ // deinit function head
+        parser.add({
             { "head/func/deinit" },
             AND("kw/deinit", "a_open", "a_close")
         });
-        parser.add({ // normal function head
+        parser.add({
             { "head/func/normal" },
-            AND("kw/func", "id/single", "a_open", OPT("param_list"), "a_close", OPT("kw/const"), OPT("arrow", TYPE))
+            AND("kw/func", "id/single", "a_open", OPT(PARAMS), "a_close", OPT(QUALIFIER), OPT("arrow", TYPE))
         });
-        parser.add({ // operator function head
+        parser.add({
             { "head/func/op" },
-            AND("kw/op", "op", "a_open", OPT("param_list"), "a_close", OPT("kw/const"), OPT("arrow", TYPE))
+            AND("kw/op", "op", "a_open", OPT(PARAMS), "a_close", OPT(QUALIFIER), OPT("arrow", TYPE))
         });
         // :: class
-        parser.add({ // class head
+        parser.add({
             { "head/class" },
             AND("kw/class", "id/single")
         });
         // :: group
-        parser.add({ // group head
+        parser.add({
             { "head/group" },
             AND("kw/group", "id/single")
         });
 
-        // expressions
-        auto EXPR = OR("lit", "id", "self_member", "expr");
-        auto EXPR_LIST = AND(EXPR, SEQ("comma", EXPR));
+        // exprs
+        auto EXPR = OR(
+            "expr",
+            SUB("expr/lit", "lit"),
+            SUB("expr/static", "id")
+        );
+        auto ARGS = AND(EXPR, SEQ("comma", EXPR));
         parser.addRecursive({
             // 2
             { // member access
                 { "expr/member" },
                 AND(EXPR, "op/member", "id/single")
             },
-            { // static function call
+            { // static call
                 { "expr/static_call" },
-                AND("id", "a_open", OPT(EXPR_LIST), "a_close")
+                AND("id", "a_open", OPT(ARGS), "a_close")
             },
-            { // member function call
+            { // member call
                 { "expr/member_call" },
-                AND(OR("self_member", "expr/member"), "a_open", OPT(EXPR_LIST), "a_close")
+                AND("expr/member", "a_open", OPT(ARGS), "a_close")
             },
-            { // post-increment / post-decrement
+            { // post-inc / post-dec
                 { "expr/unary" },
                 AND(EXPR, OR("op/inc", "op/dec"))
             },
-            // 3
-            { // positive
-                { "expr/pos" },
-                AND("op/add", EXPR)
-            },
-            { // negative
-                { "expr/neg" },
-                AND("op/sub", EXPR)
-            },
-            { // not / pre-increment / pre-decrement
+            // // 3
+            // { // pos
+            //     { "expr/pos" },
+            //     AND("op/add", EXPR)
+            // },
+            // { // neg
+            //     { "expr/neg" },
+            //     AND("op/sub", EXPR)
+            // },
+            { // not, pre-inc, pre-dec
                 { "expr/unary" },
                 AND(OR("kw/not", "op/inc", "op/dec"), EXPR)
             },
             // 5
-            { // multiplication / division / modulo
+            { // mul, div, mod
                 { "expr/binary" },
                 AND(EXPR, OR("op/mul", "op/div", "op/mod"), EXPR)
             },
             // 6
-            { // addition / subtraction
+            { // add, sub
                 { "expr/binary" },
                 AND(EXPR, OR("op/add", "op/sub"), EXPR)
             },
-            { // addition (disambiguates unary positive)
-                { "expr/add" },
-                AND(EXPR, "expr/pos")
-            },
-            { // subtraction (disambiguates unary negative)
-                { "expr/sub" },
-                AND(EXPR, "expr/neg")
-            },
+            // { // add (disambiguates pos)
+            //     { "expr/add" },
+            //     AND(EXPR, "pos")
+            // },
+            // { // sub (disambiguates neg)
+            //     { "expr/sub" },
+            //     AND(EXPR, "neg")
+            // },
             // 9
-            { // comparison
+            { // compare
                 { "expr/binary" },
                 AND(EXPR, OR("op/gt", "op/gte", "op/lt", "op/lte"), EXPR)
             },
             // 10
-            { // equality / inequality
+            { // eq / neq
                 { "expr/binary" },
                 AND(EXPR, OR("op/eq", "op/neq"), EXPR)
             },
@@ -177,132 +174,92 @@ namespace Compiler {
                 AND(EXPR, "kw/or", EXPR)
             },
             // 16
-            { // assignment
+            { // assign
                 { "expr/binary" },
                 AND(EXPR, OR("op/assign", "op/add_assign", "op/sub_assign", "op/mul_assign", "op/div_assign", "op/mod_assign"), EXPR)
             },
             // ()
-            { // parentheses
+            { // brace
                 { "expr/brace" },
                 AND("a_open", EXPR, "a_close")
             },
         });
 
-        // init list
-        parser.add({ // initializer
-            { "init" },
-            AND("id/single", "c_open", AND(EXPR, SEQ("comma", EXPR)), "c_close")
+        // stmts
+        auto STMT = OR(
+            "stmt",
+            SUB("stmt/skip", AND("kw/skip", "semicolon")),
+            SUB("stmt/break", AND("kw/break", "semicolon")),
+            SUB("stmt/expr", AND(EXPR, "semicolon"))
+        );
+        parser.add({
+            { "stmt/local/auto" },
+            AND("kw/let", "id/single", "colon", "op/assign", EXPR, "semicolon")
         });
-        parser.add({ // initializer list
-            { "init_list" },
-            AND("colon", "init", SEQ("comma", "init"))
+        parser.add({
+            { "stmt/local/type" },
+            AND("kw/let", "typed_id", "op/assign", EXPR, "semicolon")
         });
-
-        // specifier
-        parser.add({ // specifier
-            { "specifier" },
-            AND("at", OR("kw/local", "kw/global", "kw/static"))
-        });
-
-        // access
-        parser.add({ // access modifier
-            { "access" },
-            AND(OR("kw/public", "kw/private"), "colon")
-        });
-
-        // variable
-        parser.add({ // variable (init)
-            { "api/var/init" },
-            AND(OPT("specifier"), "head/var", "op/assign", EXPR, "semicolon")
-        });
-        parser.add({ // variable (no init)
-            { "api/var/no_init" },
-            AND(OPT("specifier"), "head/var", "semicolon")
-        });
-
-        // statements
-        parser.add({ // if-statement head
-            { "if_head" },
-            AND("kw/if", EXPR)
-        });
-        parser.add({ // elif-statement head
-            { "elif_head" },
-            AND("kw/elif", EXPR)
-        });
-        parser.add({ // else-statement head
-            { "else_head" },
-            AND("kw/else") });
-        parser.add({ // for-loop head
-            { "for_head" },
-            AND("kw/for", "id/single", "kw/in", EXPR)
-        });
-        parser.add({ // while-loop head
-            { "while_head" },
-            AND("kw/while", EXPR)
-        });
-        parser.add({ // local variable
-            { "stmt/var" },
-            AND("head/let", "op/assign", EXPR, "semicolon")
-        });
-        parser.add({ // skip (control-flow)
-            { "stmt/skip" },
-            AND("kw/skip", "semicolon")
-        });
-        parser.add({ // break (control-flow)
-            { "stmt/break" },
-            AND("kw/break", "semicolon")
-        });
-        parser.add({ // return (control-flow)
+        parser.add({
             { "stmt/return" },
             AND("kw/return", OPT(EXPR), "semicolon")
         });
-        parser.add({ // expression
-            { "stmt/expr" },
-            AND(EXPR, "semicolon")
-        });
         parser.addRecursive({
-            { // code-block
+            { // block
                 { "block" },
-                AND("c_open", SEQ(OR("stmt", "block")), "c_close")
+                AND("c_open", SEQ(OR(STMT, "block")), "c_close")
             },
-            { // conditional
+            { // cond
                 { "stmt/cond" }, 
-                AND("if_head", "block", SEQ("elif_head", "block"), OPT("else_head", "block"))
+                AND(SUB("if", AND("kw/if", EXPR, "block")), SEQ(SUB("elif", AND("kw/elif", EXPR, "block"))), OPT(SUB("else", AND("kw/else", "block"))))
             },
-            { // for-loop
+            { // for
                 { "stmt/for" },
-                AND("for_head", "block")
+                AND("kw/for", "id", "kw/in", EXPR, "block")
             },
-            { // while-loop
+            { // while
                 { "stmt/while" },
-                AND("while_head", "block")
+                AND("kw/while", EXPR, "block")
             },
         });
 
-        // function
-        parser.add({ // function (with block)
-            { "api/func" },
-            AND(OPT("specifier"), "head/func", OPT("init_list"), "block")
+        // api
+        // :: var
+        parser.add({
+            { "api/var/init" },
+            AND(OPT("specifier"), "head/var", "op/assign", EXPR, "semicolon")
         });
-        parser.add({ // function (without block but initializer list)
-            { "api/func" },
-            AND(OPT("specifier"), "head/func", "init_list")
+        parser.add({
+            { "api/var/no_init" },
+            AND(OPT("specifier"), "head/var", "semicolon")
         });
-
-        // class
-        parser.addRecursive({ // class
+        // :: func
+        auto INIT_EXPR = SUB("init", AND("id/single", "c_open", ARGS, "c_close"));
+        parser.add({
+            { "init_list" },
+            AND("colon", INIT_EXPR, SEQ("comma", INIT_EXPR))
+        });
+        parser.add({
+            { "api/func" },
+            OR(
+                AND(OPT("specifier"), "head/func", OPT("init_list"), "block"),
+                AND(OPT("specifier"), "head/func", "init_list")
+            )
+        });
+        // :: class
+        auto ACCESS = SUB("access", AND(OR("kw/public", "kw/private"), "colon"));
+        parser.addRecursive({
             { "api/class" },
-            AND("head/class", "c_open", SEQ(OR("access", "api")), "c_close")
+            AND("head/class", "c_open", SEQ(OR(ACCESS, "api")), "c_close")
         });
-
-        // group
-        parser.addRecursive({ // group
+        // :: group
+        parser.addRecursive({
             { "api/group" },
             AND("head/group", "c_open", SEQ("api"), "c_close")
         });
 
         // source
-        parser.addRecursive({ // source
+        parser.addRecursive({
             { "source" },
             SEQ1("api")
         });

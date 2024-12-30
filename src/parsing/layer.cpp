@@ -24,11 +24,11 @@ namespace Compiler {
                 else {
                     for (auto cacheIt = it; cacheIt != end;) {
                         bool inCache = false;
-                        for (const auto& [tag, range] : map) {
-                            if (range.first == cacheIt) {
-                                emplace(tag, range.first, range.second);
+                        for (const auto& [tag, begin, end] : map) {
+                            if (begin == cacheIt) {
+                                emplace(tag, begin, end);
                                 inCache = true;
-                                cacheIt = range.second;
+                                cacheIt = end;
                                 break;
                             }
                         }

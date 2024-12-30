@@ -1,0 +1,8 @@
+func foo() -> int {
+    return 0;
+}
+func main() -> int {
+    // call
+    foo();
+    return 0;
+}

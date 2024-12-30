@@ -1,0 +1,15 @@
+class Foo {
+    func bar(n: int) {
+        if n == 0 {
+            return;
+        }
+        // self-member
+        return _bar(n - 1);
+    }
+}
+
+func main() -> int {
+    let foo := Foo();
+    // member
+    foo.bar(10);
+}

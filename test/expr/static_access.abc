@@ -1,0 +1,5 @@
+func main() -> int {
+    let foo := 0;
+    // access
+    foo;
+}

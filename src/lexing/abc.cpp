@@ -103,9 +103,8 @@ namespace Compiler {
         lexer.addToken("lvalue", "&");
         lexer.addToken("rvalue", "\\&\\&");
 
-        // identifiers / members
+        // identifiers
         lexer.addToken("id/single", "\\b[a-zA-Z][a-zA-Z0-9_]*\\b");
-        lexer.addToken("self_member", "\\b_[a-zA-Z0-9_]*\\b");
  
         lexer.addIgnore("comment/single");
         lexer.addIgnore("comment/multi");

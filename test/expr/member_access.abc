@@ -1,0 +1,14 @@
+class Foo {
+    func bar() {
+        // self-member
+        _value;
+    }
+
+    var value: int;
+}
+
+func main() -> int {
+    let foo := Foo();
+    // member
+    foo.value;
+}

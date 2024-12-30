@@ -1,0 +1,31 @@
+func main() -> int {
+    let foo := 0;
+    // if
+    if foo == 1 {
+        let bar := 1;
+    }
+    // if, elif
+    if foo == 2 {
+        let bar := 2;
+    }
+    elif foo == 3 {
+        let bar := 3;
+    }
+    // if, else
+    if foo == 4 {
+        let bar := 4;
+    }
+    else {
+        let bar := 5;
+    }
+    // if, elif, else
+    if foo == 5 {
+        let bar := 6;
+    }
+    elif foo == 6 {
+        let bar := 7;
+    }
+    else {
+        let bar := 8;
+    }
+}

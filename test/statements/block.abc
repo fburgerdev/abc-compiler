@@ -1,0 +1,12 @@
+func main() -> int {
+    // block 1
+    {
+        let foo := 1;
+        let bar := 2;
+    }
+    // block 2
+    {
+        let foo := 3;
+        let bar := 4;
+    }
+}

@@ -1,0 +1,7 @@
+func main() -> int {
+    let foo := 10;
+    // while
+    while foo > 0 {
+        let bar := 0;
+    }
+}

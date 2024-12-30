@@ -1,0 +1,45 @@
+group Math {
+    // Vec2
+    class Vec2 {
+        // init
+        init(x: float, y: float)
+            : x{x}, y{y} {}
+
+        // zero
+        @static
+        func Zero() -> Vec2 {
+            return Vec2(0, 0);
+        }
+
+        // add, sub, mul, div
+        @static
+        op+(vec1: const &Vec2, vec2: const &Vec2) -> Vec2 {
+            return Vec2(vec1.x + vec2.x, vec1.y + vec2.y);
+        }
+        @static
+        op-(vec1: const &Vec2, vec2: const &Vec2) -> Vec2 {
+            return Vec2(vec1.x - vec2.x, vec1.y - vec2.y);
+        }
+        @static
+        op*(vec1: const &Vec2, vec2: const &Vec2) -> Vec2 {
+            return Vec2(vec1.x * vec1.x, vec1.y * vec2.y);
+        }
+        @static
+        op/(vec1: const &Vec2, vec2: const &Vec2) -> Vec2 {
+            return Vec2(vec1.x / vec2.x, vec1.y / other.y);
+        }
+
+        // x, y       
+        var x: float;
+        var y: float;
+    }
+    // dot
+    func dot(vec1: const &Vec2, vec2: const &Vec2) -> float {
+        return vec1.x * vec2.x + vec1.y * vec2.y;
+    }
+}
+func main() -> int {
+    let vec := Math::Vec2(1, 2) * Math::Vec2(3, 4);
+    std::print("vec(", vec.x, ", ", vec.y, ")");
+    return 0;
+}

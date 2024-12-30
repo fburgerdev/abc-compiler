@@ -50,10 +50,10 @@ namespace Compiler {
             });
             return false;
         }
-        // // :: test
-        // for (const Node& node : *layer) {
-        //     node.dump();
-        // }
+        // :: test
+        for (const Node& node : *layer) {
+            node.dump();
+        }
 
         // semantics
         ABC::Source sourceABC(layer->front(), handler);

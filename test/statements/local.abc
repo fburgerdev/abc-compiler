@@ -1,0 +1,6 @@
+func main() -> int {
+    // auto-type
+    let foo := 0;
+    // explicit-type
+    let bar :int= 1;
+}

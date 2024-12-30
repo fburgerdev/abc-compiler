@@ -1,0 +1,5 @@
+func main() -> int {
+    // expr
+    1 + 2;
+    return 0;
+}

@@ -1,0 +1,62 @@
+class Foo {
+    func baz(n: int) {
+        // self-member access
+        _value;
+        if n > 0 {
+            // self-member call
+            _baz(n - 1);
+        }
+    }
+
+    var value: int;
+}
+func bar() {
+
+}
+func main() -> int {
+    let foo := Foo();
+    // static access
+    foo;
+    // static call
+    bar();
+    // member access
+    foo.value;
+    // member call
+    foo.baz(10);
+
+    // operators
+    // :: increment / decrement
+    let i := 0.0;
+    ++i;
+    i++;
+    --i;
+    i--;
+    // :: comparison
+    1.0 == 1.0;
+    1.0 != 1.0;
+    1.0 < 1.0;
+    1.0 > 1.0;
+    1.0 <= 1.0;
+    1.0 >= 1.0;
+    // :: assignment
+    1.0 + 1.0;
+    1.0 - 1.0;
+    1.0 * 1.0;
+    1.0 / 1.0;
+    1.0 % 1.0;
+    // :: arithmetic
+    i += 1.0;
+    i -= 1.0;
+    i *= 1.0;
+    i /= 1.0;
+    i %= 1.0;
+    // :: logical
+    not false;
+    true and true;
+    true or false;
+    // :: bracket
+    (1);
+
+    // precedence
+    1 + 2 * 3 + (4 + 5) * 6;
+}

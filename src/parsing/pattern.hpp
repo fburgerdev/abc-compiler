@@ -35,11 +35,16 @@ namespace Compiler {
             sub.foreachQuery(func);
         }
         // extendCache
-        void extendCache(Map<Tag, Pair<NodeIterator, NodeIterator>>& map) const {
-            sub.extendCache(map);
+        void extendCache(List<Tuple<Tag, NodeIterator, NodeIterator>>& list) const {
+            sub.extendCache(list);
             if (cache) {
-                map.emplace(tag, cache.value());
+                list.emplace_back(tag, cache->first, cache->second);
             }
+        }
+        // clearCache
+        void clearCache() const {
+            sub.clearCache();
+            cache.reset();
         }
         // toString
         string toString() const {
@@ -73,7 +78,11 @@ namespace Compiler {
             func(query);
         }
         // extendCache
-        void extendCache(Map<Tag, Pair<NodeIterator, NodeIterator>>& map) const {
+        void extendCache([[maybe_unused]] List<Tuple<Tag, NodeIterator, NodeIterator>>& list) const {
+            // pass
+        }
+        // clearCache
+        void clearCache() const {
             // pass
         }
         // toString
@@ -117,8 +126,12 @@ namespace Compiler {
             sub.foreachQuery(func);
         }
         // extendCache
-        void extendCache(Map<Tag, Pair<NodeIterator, NodeIterator>>& map) const {
-            sub.extendCache(map);
+        void extendCache(List<Tuple<Tag, NodeIterator, NodeIterator>>& list) const {
+            sub.extendCache(list);
+        }
+        // clearCache
+        void clearCache() const {
+            sub.clearCache();
         }
         // toString
         string toString() const {
@@ -162,9 +175,15 @@ namespace Compiler {
             }, subs);
         }
         // extendCache
-        void extendCache(Map<Tag, Pair<NodeIterator, NodeIterator>>& map) const {
+        void extendCache(List<Tuple<Tag, NodeIterator, NodeIterator>>& list) const {
             std::apply([&](const auto&... args) {
-                ((args.extendCache(map)), ...);
+                ((args.extendCache(list)), ...);
+            }, subs);
+        }
+        // clearCache
+        void clearCache() const {
+            std::apply([&](const auto&... args) {
+                ((args.clearCache()), ...);
             }, subs);
         }
         // toString
@@ -201,9 +220,15 @@ namespace Compiler {
             }, subs);
         }
         // extendCache
-        void extendCache(Map<Tag, Pair<NodeIterator, NodeIterator>>& map) const {
+        void extendCache(List<Tuple<Tag, NodeIterator, NodeIterator>>& list) const {
             std::apply([&](const auto&... args) {
-                ((args.extendCache(map)), ...);
+                ((args.extendCache(list)), ...);
+            }, subs);
+        }
+        // clearCache
+        void clearCache() const {
+            std::apply([&](const auto&... args) {
+                ((args.clearCache()), ...);
             }, subs);
         }
         // toString
@@ -238,8 +263,12 @@ namespace Compiler {
             sub.foreachQuery(func);
         }
         // extendCache
-        void extendCache(Map<Tag, Pair<NodeIterator, NodeIterator>>& map) const {
-            sub.extendCache(map);
+        void extendCache(List<Tuple<Tag, NodeIterator, NodeIterator>>& list) const {
+            sub.extendCache(list);
+        }
+        // clearCache
+        void clearCache() const {
+            sub.clearCache();
         }
         // toString
         string toString() const {
